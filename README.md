@@ -2,6 +2,8 @@
 
 Find issues in an Xcode iOS project regarding retina/non-retina, unused, and missing images.
 
+<img src="https://dl.dropbox.com/u/16088774/iOSImageReport.png" />
+
 ## Introduction
 When developing for iOS, it's common to have multiple versions of the same image, one each for retina and non-retina devices (icon.png and icon@2x.png, for example).
 
