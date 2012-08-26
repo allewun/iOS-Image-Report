@@ -20,3 +20,9 @@ Listed below are the conditions that will be checked:
   * Code references 2x image => [Need to check]
 * Both 1x and 2x images exist
   * Code references 1x image => Warning: Image will be downscaled on non-retina devices.
+
+## Limitations
+The current version has a few limitation:
+
+* Only checks .png images
+* Only works for a single directory
