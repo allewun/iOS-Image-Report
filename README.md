@@ -23,6 +23,13 @@ Listed below are the conditions that will be checked:
 * Both 1x and 2x images exist
   * Code references 1x image => Warning: Image will be downscaled on non-retina devices.
 
+## Usage
+     ./iOSImageReport.rb -d <directory of Xcode project> [-l]
+
+* -d(ir) flag specifies the project directory
+* -l(ist) flag will print a list of which images have only 1x versions, only 2x versions, and both 1x and 2x versions
+* -a(ll) flag will print a list of all the images in the directory
+
 ## Limitations
 The current version has a few limitations:
 

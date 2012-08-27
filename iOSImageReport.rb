@@ -72,6 +72,7 @@ opts = Trollop::options do
       :type => :string,
       :required => true
   opt :list, "List image details"
+  opt :all, "List all images"
 end
 
 directory = opts.dir
@@ -113,8 +114,6 @@ end
 
 # hash now contains code files as keys containing arrays of the images that they reference
 references_all.each { |k,v| v.uniq! }
-
-print "\n"
 
 # each file
 references_all.each do |file, imgs|
@@ -186,26 +185,33 @@ images_unused_space = format_bytes(images_unused.reduce(0) { |a,img| a + File.si
 
 time = Time.now.strftime("                          -- %m/%d/%Y %I:%M%p")
 
-puts '**************************************************'
-puts '                      RESULTS'
-puts "  #{references_noimg.count_images} missing images"
-puts "  #{references_upscaled.count_images} images that will be upscaled"
-puts "  #{references_downscaled.count_images} images that will be downscaled"
-puts "  #{images_unused.count} unused images (#{images_unused_space})"
-puts
-puts "  #{time}"
-puts '**************************************************'
-puts
+puts <<-SUMMARY
+
+**************************************************
+                      RESULTS
+  #{references_noimg.count_images} missing images
+  #{references_upscaled.count_images} images that will be upscaled
+  #{references_downscaled.count_images} images that will be downscaled
+  #{images_unused.count} unused images (#{images_unused_space})
+
+  #{time}
+**************************************************
+
+SUMMARY
+
+
 
 # print results
 
-if (!opts.list)
+if (opts.all)
+  images_all.print_results("All images:", CYAN)
+elsif (opts.list)
+  images_1x_only.print_results("Images that only have 1x version:", CYAN)
+  images_2x_only.print_results("Images that only have 2x version:", CYAN)
+  images_both.print_results("Images that have both 1x and 2x versions", CYAN)
+else
   references_noimg.print_results("[ERROR] These images are referenced but don't exist:", RED)
   references_upscaled.print_results("[WARNING] These images will be upscaled on retina devices:", YELLOW)
   references_downscaled.print_results("[WARNING] These images will be downscaled on non-retina devices:", YELLOW)
   images_unused.print_results("[NOTICE] These images are unused:", GREEN)
-else
-  images_1x_only.print_results("Images that only have 1x version:", CYAN)
-  images_2x_only.print_results("Images that only have 2x version:", CYAN)
-  images_both.print_results("Images that have both 1x and 2x versions", CYAN)
 end
