@@ -24,7 +24,7 @@ Listed below are the conditions that will be checked:
   * Code references 1x image => Warning: Image will be downscaled on non-retina devices.
 
 ## Limitations
-The current version has a few limitation:
+The current version has a few limitations:
 
 * Only checks .png images
 * Only works for a single directory

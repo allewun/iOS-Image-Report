@@ -1,12 +1,12 @@
 #!/usr/bin/ruby
 
-#################################################
+#==============================================================================
 #  Find issues in an Xcode iOS project regarding
 #  retina/non-retina, unused, and missing images
 #
 #    by Allen Wu (allen.wu@originate.com)
-#    8/25/2012
-#
+#    8/26/2012
+#==============================================================================
 
 require 'rubygems'
 require 'trollop'
@@ -14,17 +14,19 @@ require 'trollop'
 RED = "\e[31m"
 GREEN = "\e[32m"
 YELLOW = "\e[33m"
+CYAN = "\e[36m"
+WHITE = "\e[37m"
 
-#################################################
+#==============================================================================
 #  Functions
-#
+#==============================================================================
 
 def is_1x(img); return !(img =~ /@2x$/); end
 def is_2x(img); return (img =~ /@2x$/); end
 def colorize(text, color_code); "#{color_code}#{text}\e[0m"; end
 
 class Hash
-  def print_results(msg, color)
+  def print_results(msg, color = WHITE)
     puts colorize(msg, color) if self.count_images > 0
 
     self.sort.each do |file, img_array|
@@ -52,15 +54,15 @@ def format_bytes(n)
   "~#{n.to_i / (1024 ** index)} " + ['B', 'KB', 'MB', 'GB'][index].to_s
 end
 
-################################################
+#==============================================================================
 #  Start...
-#
+#==============================================================================
 
 opts = Trollop::options do
   version <<-EOS
-  XcodeImageReport.rb v1.0
+  XcodeImageReport.rb v1.1
     Allen Wu (allen.wu@originate.com)
-    Last updated: 8/25/2012
+    Last updated: 8/26/2012
   EOS
   banner <<-EOS
   Find issues in an Xcode iOS project regarding
@@ -69,6 +71,7 @@ opts = Trollop::options do
   opt :dir, "Target directory",
       :type => :string,
       :required => true
+  opt :list, "List image details"
 end
 
 directory = opts.dir
@@ -154,7 +157,6 @@ references_all.each do |file, imgs|
 end
 
 
-
 # clean-up
 references_noimg.reject! { |k,v| v.empty? }
 references_upscaled.reject! { |k,v| v.empty? }
@@ -169,8 +171,16 @@ images_unused = images_all - images_used
 # remove retina images that are indirectly referenced
 images_unused = images_unused.select { |x| !(images_used.include? x.sub(/@2x$/, '')) }
 
+# populate back with original filenames
+images_2x_only.map { |x| x << '@2x' }
+
 # calculate file size of unused images
 images_unused_space = format_bytes(images_unused.reduce(0) { |a,img| a + File.size("#{directory}/#{img}.png") })
+
+
+#==============================================================================
+#  Output
+#==============================================================================
 
 # summary
 
@@ -189,7 +199,13 @@ puts
 
 # print results
 
-references_noimg.print_results("[ERROR] These images are referenced but don't exist:", RED)
-references_upscaled.print_results("[WARNING] These images will be upscaled on retina devices:", YELLOW)
-references_downscaled.print_results("[WARNING] These images will be downscaled on non-retina devices:", YELLOW)
-images_unused.print_results("[NOTICE] These images are unused:", GREEN)
+if (!opts.list)
+  references_noimg.print_results("[ERROR] These images are referenced but don't exist:", RED)
+  references_upscaled.print_results("[WARNING] These images will be upscaled on retina devices:", YELLOW)
+  references_downscaled.print_results("[WARNING] These images will be downscaled on non-retina devices:", YELLOW)
+  images_unused.print_results("[NOTICE] These images are unused:", GREEN)
+else
+  images_1x_only.print_results("Images that only have 1x version:", CYAN)
+  images_2x_only.print_results("Images that only have 2x version:", CYAN)
+  images_both.print_results("Images that have both 1x and 2x versions", CYAN)
+end
