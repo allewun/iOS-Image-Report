@@ -11,11 +11,11 @@
 require 'rubygems'
 require 'trollop'
 
-RED = "\e[31m"
-GREEN = "\e[32m"
+RED    = "\e[31m"
+GREEN  = "\e[32m"
 YELLOW = "\e[33m"
-CYAN = "\e[36m"
-WHITE = "\e[37m"
+CYAN   = "\e[36m"
+WHITE  = "\e[37m"
 
 #==============================================================================
 #  Functions
@@ -35,6 +35,7 @@ class Hash
       puts
     end
   end
+
   def count_images
     self.reduce([]) { |a, (k,v)| a << v; a }.flatten.uniq.count
   end
@@ -127,9 +128,10 @@ references_all.each do |file, imgs|
     img_name = img.sub(/@2x$/, '')
 
     # only 1x image exists
-    if (images_1x_only.include? img_name)
+    if images_1x_only.include? img_name
+
       # warn that retina devices will upscale the image
-      if (is_1x(img))
+      if is_1x(img)
         references_upscaled[file].push(img)
 
       # missing image
@@ -138,13 +140,14 @@ references_all.each do |file, imgs|
       end
 
     # only 2x image exsits
-    elsif (images_2x_only.include? img_name)
+    elsif images_2x_only.include? img_name
       references_downscaled[file].push(img)
 
     # both 1x and 2x versions exist
-    elsif (images_both.include? img_name)
+    elsif images_both.include? img_name
+
       # warn that non-retina devices will downscale the retina image
-      if (is_2x(img))
+      if is_2x(img)
         references_downscaled[file].push(img)
       end
 
@@ -203,9 +206,9 @@ SUMMARY
 
 # print results
 
-if (opts.all)
+if opts.all
   images_all.print_results("All images:", CYAN)
-elsif (opts.list)
+elsif opts.list
   images_1x_only.print_results("Images that only have 1x version:", CYAN)
   images_2x_only.print_results("Images that only have 2x version:", CYAN)
   images_both.print_results("Images that have both 1x and 2x versions", CYAN)
