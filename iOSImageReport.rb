@@ -21,16 +21,24 @@ WHITE  = "\e[37m"
 #  Functions
 #==============================================================================
 
-def is_1x(img); return !(img =~ /@2x$/); end
-def is_2x(img); return (img =~ /@2x$/); end
-def colorize(text, color_code); "#{color_code}#{text}\e[0m"; end
+def is_1x(img)
+  !(img =~ /@2x$/)
+end
+
+def is_2x(img)
+  img =~ /@2x$/
+end
+
+def colorize(text, color_code)
+  "#{color_code}#{text}\e[0m"
+end
 
 class Hash
   def print_results(msg, color = WHITE)
     puts colorize(msg, color) if self.count_images > 0
 
     self.sort.each do |file, img_array|
-      puts "#{file}"
+      puts file
       img_array.sort.each { |img| puts "  #{img}.png" }
       puts
     end
@@ -124,6 +132,7 @@ references_all.each do |file, imgs|
 
   # each image within the file
   imgs.each do |img|
+
     # bare image name (without @2x suffix)
     img_name = img.sub(/@2x$/, '')
 
